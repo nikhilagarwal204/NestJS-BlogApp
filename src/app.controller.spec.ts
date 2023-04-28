@@ -21,7 +21,7 @@ describe('BlogsController', () => {
   });
 
   const testPost: Blog = {
-    "id": 19,
+    "id": 13,
     "Name": "Nikhil Agarwal",
     "Blog": "Completed the Nestjs Blog Task, can we proceed to the next round, really interested to join the SPADES Team!"
   };

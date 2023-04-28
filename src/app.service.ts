@@ -8,14 +8,15 @@ export class AppService {
   constructor(
     @InjectRepository(Blog)
     private blogsRepository: Repository<Blog>,
-  ) {}
+  ) { }
 
-  getBlog(): Promise<Blog[]> {
-    return this.blogsRepository.find();
+  getBlog(page: number = 1, limit: number = 10): Promise<Blog[]> {
+    const skip = (page - 1) * limit;
+    return this.blogsRepository.find({ skip, take: limit });
   }
 
   getOneBlog(id: number): Promise<Blog | null> {
-    return this.blogsRepository.findOneBy({id});
+    return this.blogsRepository.findOneBy({ id });
   }
 
   postBlog(req: Blog): Promise<Blog> {
@@ -24,7 +25,7 @@ export class AppService {
 
   async updateBlog(id: number, req: Blog): Promise<Blog> {
     await this.blogsRepository.update(id, req);
-    return this.blogsRepository.findOneBy({id});
+    return this.blogsRepository.findOneBy({ id });
   }
 
   async deleteBlog(id: number): Promise<void> {

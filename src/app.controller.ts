@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Blog } from './Entity/blog.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -9,11 +9,12 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get()
-  getBlog(): Promise<Blog[]> {
-    return this.appService.getBlog();
+  getBlog(@Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,): Promise<Blog[]> {
+    return this.appService.getBlog(page, limit);
   }
 
   @Get(':id')
