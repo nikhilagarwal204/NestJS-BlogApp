@@ -10,9 +10,24 @@ export class AppService {
     private blogsRepository: Repository<Blog>,
   ) { }
 
-  getBlog(page: number = 1, limit: number = 10): Promise<Blog[]> {
+  getBlog(page: number = 1, limit: number = 10, filter?: any, sort?: any): Promise<Blog[]> {
     const skip = (page - 1) * limit;
-    return this.blogsRepository.find({ skip, take: limit });
+    const query = this.blogsRepository.createQueryBuilder('blog');
+
+    if (filter) {
+      for (const [key, value] of Object.entries(filter)) {
+        query.andWhere(`blog.${key} LIKE :${key}`, { [key]: `%${value}%` });
+      }
+    }
+
+    if (sort) {
+      for (const [key, value] of Object.entries(sort)) {
+        query.orderBy(`blog.${key}`, value as "ASC" | "DESC");
+      }
+    }
+
+    query.skip(skip).take(limit);
+    return query.getMany();
   }
 
   getOneBlog(id: number): Promise<Blog | null> {

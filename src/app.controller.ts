@@ -5,16 +5,38 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
   @Get()
-  getBlog(@Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,): Promise<Blog[]> {
-    return this.appService.getBlog(page, limit);
+  getBlog(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('filter') filter?: string,
+    @Query('sort') sort?: string,
+  ): Promise<Blog[]> {
+    let filterObj;
+    if (filter) {
+      try {
+        filterObj = JSON.parse(filter);
+      } catch (e) {
+        throw new BadRequestException('Invalid filter format');
+      }
+    }
+
+    let sortObj;
+    if (sort) {
+      try {
+        sortObj = JSON.parse(sort);
+      } catch (e) {
+        throw new BadRequestException('Invalid sort format');
+      }
+    }
+
+    return this.appService.getBlog(page, limit, filterObj, sortObj);
   }
 
   @Get(':id')
